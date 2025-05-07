@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <title>AR Entrega</title>
@@ -7,62 +7,87 @@
   <script src="https://cdn.zappar.io/zappar-threejs/0.3.6/zappar-threejs.min.js"></script>
   <style>
     body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
+    canvas { display: none; }
     .overlay {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 10px; z-index: 10;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
     }
     .overlay button {
-      font-size: 16px; padding: 10px 15px; border-radius: 5px; border: none;
-      background-color: #007bff; color: white; cursor: pointer;
+      font-size: 18px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="overlay">
-    <button onclick="window.open('https://cathsanchez6.github.io/Formulario_Prueba_dos/', '_blank')">Confirmar entrega</button>
-    <button onclick="window.open('https://wa.me/573103884630', '_blank')">Informar novedad</button>
+  <div class="overlay" id="start-overlay">
+    <h2>¡Bienvenido!</h2>
+    <p>Presiona el botón para iniciar la experiencia en realidad aumentada:</p>
+    <button id="start-ar">Iniciar experiencia AR</button>
   </div>
 
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
     import { ZapparThree } from 'https://cdn.zappar.io/zappar-threejs/0.3.6/zappar-threejs.min.js';
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    const startButton = document.getElementById("start-ar");
+    const overlay = document.getElementById("start-overlay");
 
-    const scene = new THREE.Scene();
-    const camera = new ZapparThree.Camera();
-    scene.add(camera);
+    startButton.addEventListener("click", () => {
+      overlay.style.display = "none";
 
-    // Colocamos los elementos directamente en la escena (sin ImageTracker)
-    const cube = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 0.1, 0.1),
-      new THREE.MeshBasicMaterial({ color: 0xffcc00, wireframe: false })
-    );
-    cube.position.set(0, 0, -0.5); // Visible frente a la cámara
-    scene.add(cube);
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+      renderer.domElement.style.display = "block";
 
-    const loader = new THREE.FontLoader();
-    loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
-      const textGeo = new THREE.TextGeometry('Gracias por recibir', {
-        font: font,
-        size: 0.03,
-        height: 0.002
+      const scene = new THREE.Scene();
+      const camera = new ZapparThree.Camera();
+      scene.add(camera);
+
+      // Agregar cubo
+      const cube = new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.1, 0.1),
+        new THREE.MeshBasicMaterial({ color: 0xffcc00 })
+      );
+      cube.position.set(0, 0, -0.5);
+      scene.add(cube);
+
+      // Cargar y agregar texto
+      const loader = new THREE.FontLoader();
+      loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+        const textGeo = new THREE.TextGeometry('Gracias por recibir', {
+          font: font,
+          size: 0.03,
+          height: 0.002
+        });
+        const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const textMesh = new THREE.Mesh(textGeo, textMaterial);
+        textMesh.position.set(-0.1, 0.15, -0.5);
+        scene.add(textMesh);
       });
-      const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-      const textMesh = new THREE.Mesh(textGeo, textMaterial);
-      textMesh.position.set(-0.1, 0.15, -0.5);
-      scene.add(textMesh);
-    });
 
-    ZapparThree.browser.incompatibleUI();
+      ZapparThree.browser.incompatibleUI();
 
-    const pipeline = ZapparThree.glContextCreate();
-    renderer.setAnimationLoop(() => {
-      camera.updateFrame(renderer);
-      renderer.render(scene, camera);
+      const pipeline = ZapparThree.glContextCreate();
+      renderer.setAnimationLoop(() => {
+        camera.updateFrame(renderer);
+        renderer.render(scene, camera);
+      });
     });
   </script>
 </body>
