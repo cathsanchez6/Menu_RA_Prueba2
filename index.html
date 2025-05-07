@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AR Entrega</title>
+  <script src="https://cdn.zappar.io/zappar-js/0.3.6/zappar.js"></script>
+  <script src="https://cdn.zappar.io/zappar-threejs/0.3.6/zappar-threejs.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+    .overlay {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px;
+    }
+    .overlay button {
+      font-size: 16px; padding: 10px 15px; border-radius: 5px; border: none;
+      background-color: #007bff; color: white; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <button onclick="window.open('https://cathsanchez6.github.io/Formulario_Prueba_dos/', '_blank')">Confirmar entrega</button>
+    <button onclick="window.open('https://wa.me/573103884630', '_blank')">Informar novedad</button>
+  </div>
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
+    import { ZapparThree } from 'https://cdn.zappar.io/zappar-threejs/0.3.6/zappar-threejs.min.js';
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new ZapparThree.Camera();
+    scene.add(camera);
+
+    const manager = new ZapparThree.ImageTrackerLoader().load("assets/logo.zpt");
+    const anchor = new ZapparThree.ImageAnchorGroup(camera, manager);
+    scene.add(anchor);
+
+    const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+    const cube = new THREE.Mesh(geometry, material);
+    anchor.add(cube);
+
+    const loader = new THREE.FontLoader();
+    loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+      const textGeo = new THREE.TextGeometry('Gracias por recibir', {
+        font: font, size: 0.03, height: 0.001,
+      });
+      const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const mesh = new THREE.Mesh(textGeo, textMaterial);
+      mesh.position.set(-0.1, 0.1, 0);
+      anchor.add(mesh);
+    });
+
+    ZapparThree.browser.incompatibleUI();
+
+    const pipeline = ZapparThree.glContextCreate();
+    renderer.setAnimationLoop(() => {
+      camera.updateFrame(renderer);
+      renderer.render(scene, camera);
+    });
+  </script>
+</body>
+</html>
