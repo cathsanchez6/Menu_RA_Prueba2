@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +10,7 @@
     canvas { display: block; }
     .overlay {
       position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 10px;
+      display: flex; gap: 10px; z-index: 10;
     }
     .overlay button {
       font-size: 16px; padding: 10px 15px; border-radius: 5px; border: none;
@@ -24,6 +23,7 @@
     <button onclick="window.open('https://cathsanchez6.github.io/Formulario_Prueba_dos/', '_blank')">Confirmar entrega</button>
     <button onclick="window.open('https://wa.me/573103884630', '_blank')">Informar novedad</button>
   </div>
+
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
     import { ZapparThree } from 'https://cdn.zappar.io/zappar-threejs/0.3.6/zappar-threejs.min.js';
@@ -36,24 +36,25 @@
     const camera = new ZapparThree.Camera();
     scene.add(camera);
 
-    const manager = new ZapparThree.ImageTrackerLoader().load("assets/logo.zpt");
-    const anchor = new ZapparThree.ImageAnchorGroup(camera, manager);
-    scene.add(anchor);
-
-    const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
-    const cube = new THREE.Mesh(geometry, material);
-    anchor.add(cube);
+    // Colocamos los elementos directamente en la escena (sin ImageTracker)
+    const cube = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.1, 0.1),
+      new THREE.MeshBasicMaterial({ color: 0xffcc00, wireframe: false })
+    );
+    cube.position.set(0, 0, -0.5); // Visible frente a la cámara
+    scene.add(cube);
 
     const loader = new THREE.FontLoader();
-    loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+    loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
       const textGeo = new THREE.TextGeometry('Gracias por recibir', {
-        font: font, size: 0.03, height: 0.001,
+        font: font,
+        size: 0.03,
+        height: 0.002
       });
       const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-      const mesh = new THREE.Mesh(textGeo, textMaterial);
-      mesh.position.set(-0.1, 0.1, 0);
-      anchor.add(mesh);
+      const textMesh = new THREE.Mesh(textGeo, textMaterial);
+      textMesh.position.set(-0.1, 0.15, -0.5);
+      scene.add(textMesh);
     });
 
     ZapparThree.browser.incompatibleUI();
